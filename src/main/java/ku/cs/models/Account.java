@@ -1,36 +1,100 @@
 package ku.cs.models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
 public class Account {
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private ArrayList<Transaction> transactions;
 
-    private float income = 0, expense = 0, balance = 0;
+    public Account(float amount, String date) throws ParseException {
+        this();
+        transactions.add(new Transaction(amount, (formatter.parse(date))));
+    }
 
-    public Account(float initialBalance) {
-        this.balance = initialBalance;
-        this.income = initialBalance;
+    public Account() {
+        transactions = new ArrayList<>();
     }
 
     public float getBalance() {
-        return balance;
+        float amount = 0;
+        for (Transaction transaction : transactions) {
+            amount += transaction.getAmount();
+        }
+        return amount;
     }
 
     public float getIncome() {
-        return income;
+        float amount = 0;
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() > 0) {
+                amount += transaction.getAmount();
+            }
+        }
+        return amount;
     }
 
     public float getExpense() {
-        return expense;
+        float amount = 0;
+        for (Transaction transaction : transactions) {
+            if (transaction.getAmount() < 0) {
+                amount -= transaction.getAmount();
+            }
+        }
+        return amount;
     }
 
-    public void deposit(float income){
-        this.income += income;
-        balance += income;
+    public void deposit(float income, String date) throws ParseException {
+        deposit(income, date, "");
     }
 
-    public void withdraw(float expense) {
-        if (expense > balance){
+    public void deposit(float income, String date, String description) throws ParseException {
+        transactions.add(new Transaction(income, formatter.parse(date), description));
+    }
+
+    public void withdraw(float expense, String date) throws ParseException {
+        withdraw(expense, date, "");
+    }
+
+    public void withdraw(float expense, String date, String description) throws ParseException {
+        if (expense > getBalance()) {
             return;
         }
-        this.expense += expense;
-        balance -= expense;
+        transactions.add(new Transaction(-expense, formatter.parse(date), description));
+    }
+
+    public Transaction findTransactionByDate(String strDate) {
+        for (Transaction transaction : transactions) {
+            System.out.println(formatter.format(transaction.getDate()) + "'" + strDate + "'" + formatter.format(transaction.getDate()).equals(strDate));
+            if (formatter.format(transaction.getDate()).equals(strDate)) {
+                return transaction;
+            }
+        }
+        return null;
+    }
+
+    public boolean editTransactionChangeDate(String strDate, String newDate) throws ParseException {
+        Transaction transaction = findTransactionByDate(strDate);
+        if (transaction == null)
+            return false;
+        transaction.setDate(formatter.parse(newDate));
+        return true;
+    }
+
+    public boolean editTransactionChangeDescription(String strDate, String description) {
+        Transaction transaction = findTransactionByDate(strDate);
+        if (transaction == null)
+            return false;
+        transaction.setDescription(description);
+        return true;
+    }
+
+    public boolean editTransactionChangeAmount(String strDate, float amount) {
+        Transaction transaction = findTransactionByDate(strDate);
+        if (transaction == null)
+            return false;
+        transaction.setAmount(amount);
+        return true;
     }
 }
