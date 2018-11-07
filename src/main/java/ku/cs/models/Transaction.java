@@ -48,4 +48,9 @@ public class Transaction {
     public boolean isExpense() {
         return amount < 0;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Date: %s, Amount: %.2f, Description: %s", date.toString(), amount, description);
+    }
 }

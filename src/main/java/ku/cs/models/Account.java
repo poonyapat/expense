@@ -1,5 +1,6 @@
 package ku.cs.models;
 
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,13 +54,13 @@ public class Account {
         transactions.add(new Transaction(income, formatter.parse(date), description));
     }
 
-    public void withdraw(float expense, String date) throws ParseException {
+    public void withdraw(float expense, String date) throws ParseException, IllegalArgumentException {
         withdraw(expense, date, "");
     }
 
-    public void withdraw(float expense, String date, String description) throws ParseException {
+    public void withdraw(float expense, String date, String description) throws ParseException, IllegalArgumentException {
         if (expense > getBalance()) {
-            return;
+            throw new IllegalArgumentException("Invalid amount of money");
         }
         transactions.add(new Transaction(-expense, formatter.parse(date), description));
     }
